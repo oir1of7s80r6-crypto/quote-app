@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-<title>正陽資訊報價單v2</title>
+<title>厚德報價單</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:"Microsoft JhengHei",Arial,sans-serif;background:#f0f2f5;min-height:100vh;padding:12px}
@@ -97,7 +97,12 @@ body{font-family:"Microsoft JhengHei",Arial,sans-serif;background:#f0f2f5;min-he
       <button class="dlbtn btn-pdf" id="dlb-pdf" onclick="doDownload('pdf')">⬇ PDF</button>
     </div>
     <div class="ldg" id="ldg"><span class="sp"></span><span id="ldg-msg">產生中，請稍候...</span></div>
-    <p class="fnote">Excel 格式與原始報價單完全一致｜PDF 可直接列印</p>
+    <p class="fnote">Excel 格式與原始報價單完全一致</p>
+    <div style="margin-top:8px;display:grid;grid-template-columns:1fr 1fr;gap:8px">
+      <button class="dlbtn" style="background:#e67e22;color:#fff;font-size:13px;padding:11px 6px" onclick="doDownload('pdf')">🖨 列印預覽 PDF</button>
+      <button class="dlbtn" style="background:#8e44ad;color:#fff;font-size:13px;padding:11px 6px" onclick="window.open('https://www.ilovepdf.com/zh-tw/excel_to_pdf','_blank')">🔗 Excel 轉 PDF<br><span style="font-size:10px;opacity:0.85">ilovepdf.com</span></button>
+    </div>
+    <p class="fnote" style="margin-top:6px">📱 手機建議：下載 Excel 後用 ilovepdf 轉 PDF</p>
   </div>
 </div>
 
@@ -154,34 +159,46 @@ async function doDownload(type){
   msg.textContent = type==='pdf' ? '產生 PDF 中，請稍候...' : '產生 Excel 中，請稍候...';
   ldg.classList.add('on');
   try{
-    const endpoint = type==='pdf' ? '/generate_pdf' : '/generate';
-    const resp=await fetch(endpoint,{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({
-        date:document.getElementById('fd').value,
-        client:document.getElementById('fc').value||'未命名',
-        contact:document.getElementById('fp').value,
-        note:document.getElementById('fn').value,
-        tax_mode:taxMode,
-        items:items.map(i=>({desc:i.desc,price:parseFloat(i.price)||0,qty:parseFloat(i.qty)||0}))
-      })
-    });
-    if(!resp.ok) throw new Error('伺服器錯誤 '+resp.status);
-    const blob=await resp.blob();
-    const url=URL.createObjectURL(blob);
-    const a=document.createElement('a');
-    a.href=url;
-    const cd=resp.headers.get('Content-Disposition')||'';
-    const m=cd.match(/filename\*?=(?:UTF-8'')?["']?([^"';\n]+)/i);
-    const client=document.getElementById('fc').value||'未命名';
-    const today=new Date().toISOString().slice(0,10).replace(/-/g,'');
-    const taxLabel=taxMode==='with'?'含稅':'未稅';
-    a.download = type==='pdf'
-      ? `正陽資訊報價單_${client}_${taxLabel}_${today}.pdf`
-      : `正陽資訊報價單_${client}_${taxLabel}_${today}.xlsx`;
-    a.click();
-    URL.revokeObjectURL(url);
+    const endpoint = type==='pdf' ? '/preview_pdf' : '/generate';
+    const payload = {
+      date:document.getElementById('fd').value,
+      client:document.getElementById('fc').value||'未命名',
+      contact:document.getElementById('fp').value,
+      note:document.getElementById('fn').value,
+      tax_mode:taxMode,
+      items:items.map(i=>({desc:i.desc,price:parseFloat(i.price)||0,qty:parseFloat(i.qty)||0}))
+    };
+
+    if(type==='pdf'){
+      // 雲端版 PDF：開新視窗顯示可列印頁面
+      const resp=await fetch('/preview_pdf',{
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify(payload)
+      });
+      if(!resp.ok) throw new Error('伺服器錯誤 '+resp.status);
+      const html=await resp.text();
+      const win=window.open('','_blank');
+      win.document.write(html);
+      win.document.close();
+    } else {
+      const resp=await fetch('/generate',{
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify(payload)
+      });
+      if(!resp.ok) throw new Error('伺服器錯誤 '+resp.status);
+      const blob=await resp.blob();
+      const url=URL.createObjectURL(blob);
+      const a=document.createElement('a');
+      a.href=url;
+      const client=document.getElementById('fc').value||'未命名';
+      const today=new Date().toISOString().slice(0,10).replace(/-/g,'');
+      const taxLabel=taxMode==='with'?'含稅':'未稅';
+      a.download=`厚德報價單_${client}_${taxLabel}_${today}.xlsx`;
+      a.click();
+      URL.revokeObjectURL(url);
+    }
   }catch(e){
     const msg = e.message.includes('404') ? '找不到路由，請重新啟動伺服器' : e.message.includes('500') ? '伺服器產生錯誤，請查看命令提示字元的錯誤訊息' : e.message + '\n\n請確認伺服器有在運行';
     alert('下載失敗：' + msg);
