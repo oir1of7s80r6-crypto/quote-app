@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>厚德報價單</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"Microsoft JhengHei",Arial,sans-serif;background:#f0f2f5;min-height:100vh;padding:12px}
+.wrap{max-width:500px;margin:0 auto}
+.hdr{background:linear-gradient(135deg,#1a6b3a,#2aad5e);color:#fff;border-radius:16px;padding:18px;margin-bottom:12px;text-align:center;box-shadow:0 4px 15px rgba(26,107,58,0.3)}
+.hdr h1{font-size:19px;font-weight:700;margin-bottom:3px}
+.hdr p{font-size:12px;opacity:.85}
+.card{background:#fff;border-radius:14px;padding:14px;margin-bottom:10px;box-shadow:0 1px 6px rgba(0,0,0,.07)}
+.ct{font-size:13px;font-weight:700;color:#333;margin-bottom:12px;padding-bottom:9px;border-bottom:1.5px solid #f0f0f0}
+.fg{margin-bottom:10px}
+.fg label{font-size:13px;color:#666;display:block;margin-bottom:4px;font-weight:500}
+.fg input,.fg textarea,.fg select{width:100%;font-size:15px;padding:10px 12px;border:1.5px solid #e0e4ea;border-radius:10px;background:#f8f9fb;color:#222;outline:none;font-family:inherit;-webkit-appearance:none}
+.fg input:focus,.fg textarea:focus,.fg select:focus{border-color:#1a6b3a;background:#fff;box-shadow:0 0 0 3px rgba(26,107,58,.1)}
+.fg textarea{resize:vertical;min-height:64px}
+.fg select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%23666' d='M6 8L0 0h12z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:36px}
+.tax-toggle{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:4px}
+.tax-btn{padding:10px;border:1.5px solid #e0e4ea;border-radius:10px;background:#f8f9fb;color:#666;font-size:14px;font-family:inherit;font-weight:600;cursor:pointer;text-align:center;transition:all .15s}
+.tax-btn.active{border-color:#1a6b3a;background:#1a6b3a;color:#fff}
+.irow{border:1.5px solid #e8f5ec;border-radius:11px;padding:12px;margin-bottom:8px;position:relative;background:#f9fdf9}
+.inum{font-size:11px;color:#1a6b3a;margin-bottom:8px;font-weight:700}
+.igrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.igrid .full{grid-column:1/-1}
+.igrid input{width:100%;font-size:14px;padding:8px 10px;border:1.5px solid #e0e4ea;border-radius:8px;background:#fff;color:#222;outline:none;font-family:inherit;-webkit-appearance:none}
+.igrid input:focus{border-color:#1a6b3a}
+.isub{font-size:13px;color:#777;margin-top:8px;text-align:right}
+.isub strong{color:#1a6b3a;font-size:14px}
+.dbtn{position:absolute;top:10px;right:10px;background:#fff0f0;border:none;cursor:pointer;color:#e53e3e;font-size:18px;width:28px;height:28px;display:flex;align-items:center;justify-content:center;border-radius:50%}
+.abtn{width:100%;padding:12px;border:2px dashed #b8d8c2;border-radius:11px;background:none;color:#1a6b3a;font-size:14px;cursor:pointer;font-family:inherit;font-weight:600;margin-top:4px}
+.abtn:hover{border-color:#1a6b3a;background:#f0faf3}
+.sr{display:flex;justify-content:space-between;align-items:center;padding:8px 0;font-size:14px;border-bottom:1px solid #f5f5f5}
+.sr:last-child{border:none;margin-top:4px;padding-top:10px;border-top:2px solid #1a6b3a}
+.sl{color:#666}
+.sv{font-weight:600;color:#333}
+.stot .sl,.stot .sv{color:#1a6b3a;font-weight:700;font-size:20px}
+.btns{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.dlbtn{width:100%;padding:15px;border:none;border-radius:12px;font-size:15px;cursor:pointer;font-family:inherit;font-weight:700;display:flex;align-items:center;justify-content:center;gap:6px;transition:all .15s}
+.dlbtn:active{transform:scale(.97)}
+.dlbtn:disabled{background:#aaa!important;box-shadow:none;cursor:not-allowed}
+.btn-xl{background:#1a6b3a;color:#fff;box-shadow:0 4px 14px rgba(26,107,58,.35)}
+.btn-pdf{background:#c0392b;color:#fff;box-shadow:0 4px 14px rgba(192,57,43,.35)}
+.ldg{display:none;text-align:center;padding:10px;color:#555;font-size:13px;font-weight:600}
+.ldg.on{display:block}
+.sp{display:inline-block;width:16px;height:16px;border:2px solid #1a6b3a;border-top-color:transparent;border-radius:50%;animation:sp .7s linear infinite;vertical-align:-3px;margin-right:5px}
+@keyframes sp{to{transform:rotate(360deg)}}
+.fnote{font-size:11px;color:#bbb;text-align:center;margin-top:8px;padding-bottom:20px}
+.eh{font-size:13px;color:#ccc;text-align:center;padding:16px 0}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="hdr">
+    <h1>正陽資訊 報價單</h1>
+    <p>填寫完成後下載 Excel 或 PDF</p>
+  </div>
+
+  <div class="card">
+    <div class="ct">📅 基本資料</div>
+    <div class="fg"><label>報價日期</label><input type="date" id="fd"></div>
+    <div class="fg"><label>客戶名稱</label><input type="text" id="fc" placeholder="請輸入客戶名稱"></div>
+    <div class="fg"><label>聯絡人</label><input type="text" id="fp" placeholder="請輸入聯絡人姓名"></div>
+  </div>
+
+  <div class="card">
+    <div class="ct">📦 商品明細</div>
+    <div id="iw"><div class="eh">尚未新增商品</div></div>
+    <button class="abtn" onclick="addItem()">＋ 新增商品</button>
+  </div>
+
+  <div class="card">
+    <div class="ct">💰 金額合計</div>
+    <div class="fg" style="margin-bottom:12px">
+      <label>稅金設定</label>
+      <div class="tax-toggle">
+        <button class="tax-btn active" id="tax-with" onclick="setTax('with')">含稅（+5%）</button>
+        <button class="tax-btn" id="tax-without" onclick="setTax('without')">未稅</button>
+      </div>
+    </div>
+    <div class="sr"><span class="sl">小計</span><span class="sv" id="ss">$0</span></div>
+    <div class="sr"><span class="sl" id="tax-label">稅金（5%）</span><span class="sv" id="st">$0</span></div>
+    <div class="sr stot"><span class="sl">總計金額</span><span class="sv" id="stt">$0</span></div>
+  </div>
+
+  <div class="card">
+    <div class="ct">📝 備註</div>
+    <div class="fg"><textarea id="fn" placeholder="請輸入備註說明..."></textarea></div>
+  </div>
+
+  <div class="card">
+    <div class="btns">
+      <button class="dlbtn btn-xl" id="dlb-xl" onclick="doDownload('excel')">⬇ Excel</button>
+      <button class="dlbtn btn-pdf" id="dlb-pdf" onclick="doDownload('pdf')">⬇ PDF</button>
+    </div>
+    <div class="ldg" id="ldg"><span class="sp"></span><span id="ldg-msg">產生中，請稍候...</span></div>
+    <p class="fnote">Excel 格式與原始報價單完全一致｜PDF 可直接列印</p>
+  </div>
+</div>
+
+<script>
+let items=[], nid=1, taxMode='with';
+
+function setTax(mode){
+  taxMode=mode;
+  document.getElementById('tax-with').classList.toggle('active', mode==='with');
+  document.getElementById('tax-without').classList.toggle('active', mode==='without');
+  document.getElementById('tax-label').textContent = mode==='with' ? '稅金（5%）' : '稅金（未稅）';
+  tot();
+}
+function esc(s){return(s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;')}
+function addItem(){items.push({id:nid++,desc:'',price:'',qty:1});render();}
+function del(id){items=items.filter(i=>i.id!==id);render();}
+function upd(id,f,v){const i=items.find(x=>x.id===id);if(i){i[f]=v;ref(id);tot();}}
+function ref(id){
+  const i=items.find(x=>x.id===id),el=document.getElementById('s'+id);
+  if(i&&el){el.textContent='$'+((parseFloat(i.price)||0)*(parseFloat(i.qty)||0)).toLocaleString();}
+}
+function tot(){
+  const sub=items.reduce((s,i)=>s+(parseFloat(i.price)||0)*(parseFloat(i.qty)||0),0);
+  const tax=taxMode==='with'?Math.round(sub*.05):0;
+  document.getElementById('ss').textContent='$'+sub.toLocaleString();
+  document.getElementById('st').textContent='$'+tax.toLocaleString();
+  document.getElementById('stt').textContent='$'+(sub+tax).toLocaleString();
+}
+function render(){
+  const w=document.getElementById('iw');
+  if(!items.length){w.innerHTML='<div class="eh">尚未新增商品</div>';tot();return;}
+  w.innerHTML=items.map((it,idx)=>{
+    const s=(parseFloat(it.price)||0)*(parseFloat(it.qty)||0);
+    return `<div class="irow">
+      <div class="inum">商品 ${idx+1}</div>
+      <button class="dbtn" onclick="del(${it.id})">×</button>
+      <div class="igrid">
+        <div class="full"><input type="text" placeholder="商品描述" value="${esc(it.desc)}" oninput="upd(${it.id},'desc',this.value)"></div>
+        <input type="number" placeholder="單價" value="${it.price}" oninput="upd(${it.id},'price',this.value)" inputmode="decimal">
+        <input type="number" placeholder="數量" value="${it.qty}" min="1" oninput="upd(${it.id},'qty',this.value)" inputmode="decimal">
+      </div>
+      <div class="isub">小計：<strong id="s${it.id}">$${s.toLocaleString()}</strong></div>
+    </div>`;
+  }).join('');
+  tot();
+}
+
+async function doDownload(type){
+  const xlBtn=document.getElementById('dlb-xl');
+  const pdfBtn=document.getElementById('dlb-pdf');
+  const ldg=document.getElementById('ldg');
+  const msg=document.getElementById('ldg-msg');
+  xlBtn.disabled=true; pdfBtn.disabled=true;
+  msg.textContent = type==='pdf' ? '產生 PDF 中，請稍候...' : '產生 Excel 中，請稍候...';
+  ldg.classList.add('on');
+  try{
+    const endpoint = type==='pdf' ? '/generate_pdf' : '/generate';
+    const resp=await fetch(endpoint,{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        date:document.getElementById('fd').value,
+        client:document.getElementById('fc').value||'未命名',
+        contact:document.getElementById('fp').value,
+        note:document.getElementById('fn').value,
+        tax_mode:taxMode,
+        items:items.map(i=>({desc:i.desc,price:parseFloat(i.price)||0,qty:parseFloat(i.qty)||0}))
+      })
+    });
+    if(!resp.ok) throw new Error('伺服器錯誤 '+resp.status);
+    const blob=await resp.blob();
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a');
+    a.href=url;
+    const cd=resp.headers.get('Content-Disposition')||'';
+    const m=cd.match(/filename\*?=(?:UTF-8'')?["']?([^"';\n]+)/i);
+    const client=document.getElementById('fc').value||'未命名';
+    const today=new Date().toISOString().slice(0,10).replace(/-/g,'');
+    const taxLabel=taxMode==='with'?'含稅':'未稅';
+    a.download = type==='pdf'
+      ? `厚德報價單_${client}_${taxLabel}_${today}.pdf`
+      : `厚德報價單_${client}_${taxLabel}_${today}.xlsx`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }catch(e){
+    const msg = e.message.includes('404') ? '找不到路由，請重新啟動伺服器' : e.message.includes('500') ? '伺服器產生錯誤，請查看命令提示字元的錯誤訊息' : e.message + '\n\n請確認伺服器有在運行';
+    alert('下載失敗：' + msg);
+  }finally{
+    xlBtn.disabled=false; pdfBtn.disabled=false;
+    ldg.classList.remove('on');
+  }
+}
+document.getElementById('fd').value=new Date().toISOString().slice(0,10);
+</script>
+</body>
+</html>
