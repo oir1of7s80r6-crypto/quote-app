@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-<title>厚德報價單</title>
+<title>正陽資訊報價單</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:"Microsoft JhengHei",Arial,sans-serif;background:#f0f2f5;min-height:100vh;padding:12px}
@@ -178,8 +178,8 @@ async function doDownload(type){
     const today=new Date().toISOString().slice(0,10).replace(/-/g,'');
     const taxLabel=taxMode==='with'?'含稅':'未稅';
     a.download = type==='pdf'
-      ? `厚德報價單_${client}_${taxLabel}_${today}.pdf`
-      : `厚德報價單_${client}_${taxLabel}_${today}.xlsx`;
+      ? `正陽資訊報價單_${client}_${taxLabel}_${today}.pdf`
+      : `正陽資訊報價單_${client}_${taxLabel}_${today}.xlsx`;
     a.click();
     URL.revokeObjectURL(url);
   }catch(e){
